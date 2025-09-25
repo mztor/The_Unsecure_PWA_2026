@@ -7,13 +7,13 @@ name: 🔐 Security Analysis (SAST) - Student/Teacher Friendly
 # 🚀 WHEN IT RUNS:
 on:
   push:
-    branches: [main, master, develop]  # Runs when you push code to main branches
+    branches: [main, master, develop] # Runs when you push code to main branches
   pull_request:
-    branches: [main, master, develop]  # Runs when someone creates a pull request
+    branches: [main, master, develop] # Runs when someone creates a pull request
   schedule:
     # 📅 Runs automatically every Sunday at 2 AM UTC (like a weekly security checkup)
     - cron: "0 2 * * 0"
-  workflow_dispatch:  # 👆 Allows manual runs from the Actions tab
+  workflow_dispatch: # 👆 Allows manual runs from the Actions tab
     inputs:
       force_run:
         description: "🎯 Force run even if disabled (for first-time setup)"
@@ -43,16 +43,16 @@ jobs:
         run: |
           echo "🎓 Welcome to Security Analysis for Students & Teachers!"
           echo "=================================================="
-          
+
           # Initialize variables
           SHOULD_RUN="false"
           SETUP_COMPLETE="false"
           ISSUES_ENABLED="true"
-          
+
           # Check if Issues are enabled in the repository
           echo "🔍 Checking if Issues are enabled in your repository..."
           REPO_INFO=$(gh api repos/${{ github.repository }} --jq '.has_issues')
-          
+
           if [ "$REPO_INFO" != "true" ]; then
             echo ""
             echo "❌ SETUP REQUIRED: Issues are disabled in your repository"
@@ -70,7 +70,7 @@ jobs:
             echo "✅ Issues are enabled - Good!"
             ISSUES_ENABLED="true"
           fi
-          
+
           # Check if workflow should run
           if [[ "${{ env.SECURITY_ANALYSIS_ENABLED }}" == "true" ]] || [[ "${{ github.event.inputs.force_run }}" == "true" ]]; then
             SHOULD_RUN="true"
@@ -108,12 +108,12 @@ jobs:
             SHOULD_RUN="false"
             SETUP_COMPLETE="false"
           fi
-          
+
           # Set outputs
           echo "should_run=$SHOULD_RUN" >> $GITHUB_OUTPUT
           echo "setup_complete=$SETUP_COMPLETE" >> $GITHUB_OUTPUT  
           echo "issues_enabled=$ISSUES_ENABLED" >> $GITHUB_OUTPUT
-          
+
           echo ""
           echo "📊 Configuration Summary:"
           echo "- Should run analysis: $SHOULD_RUN"
@@ -125,39 +125,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Check if setup instructions issue already exists
-          EXISTING_ISSUE=$(gh issue list --label "setup,security" --state open --json title,number | jq -r '.[] | select(.title | contains("Security Analysis Setup")) | .number' | head -1)
-          
-          if [ -n "$EXISTING_ISSUE" ] && [ "$EXISTING_ISSUE" != "null" ]; then
-            echo "ℹ️  Setup instructions issue already exists: #$EXISTING_ISSUE"
-          else
-            echo "📝 Creating setup instructions issue..."
-            
-            gh issue create \
-              --title "🔧 Security Analysis Setup Instructions - Enable Automatic Scanning" \
-              --body "# 🎓 Security Analysis Setup Instructions
-
-## 🎉 Congratulations! 
-Your security analysis ran successfully, but it's currently set to manual-only mode.
-
-## 🔄 To Enable Automatic Scanning:
-1. Edit .github/workflows/security-analysis.yml
-2. Change SECURITY_ANALYSIS_ENABLED from false to true
-3. Commit and push your changes
-
-## 📅 What Happens Next:
-- Automatic scans every Sunday at 2 AM UTC
-- Scans on every code push to main branch  
-- Security issues will be automatically created as GitHub Issues
-
-## 🆘 Need Help?
-Ask your teacher or create an issue with the help-needed label.
-
----
-This issue was automatically created to help you complete the setup." \
-              --label "setup,security,help,automated" \
-              --assignee "${{ github.actor }}" || true
-          fi
+          echo "📝 Creating setup instruction issue..."
+          gh issue create --title "Security Analysis Setup" --body "Change SECURITY_ANALYSIS_ENABLED to true in the workflow file" --label "setup" || true
 
   codeql-analysis:
     name: 🔍 CodeQL Security Analysis
@@ -180,21 +149,21 @@ This issue was automatically created to help you complete the setup." \
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Gets complete history for better analysis
+          fetch-depth: 0 # Gets complete history for better analysis
 
       # 🔧 STEP 2: Initialize CodeQL (GitHub's security scanner)
       - name: 🔧 Initialize CodeQL Scanner
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          config-file: ./.github/codeql/codeql-config.yml  # Uses custom security rules
+          config-file: ./.github/codeql/codeql-config.yml # Uses custom security rules
 
       # 🐍 STEP 3: Setup Python environment (only for Python files)
       - name: 🐍 Setup Python Environment
         if: matrix.language == 'python'
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"  # Modern Python version
+          python-version: "3.11" # Modern Python version
 
       # 📦 STEP 4: Install Python dependencies (so scanner understands imports)
       - name: 📦 Install Python Dependencies
@@ -203,12 +172,12 @@ This issue was automatically created to help you complete the setup." \
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # 🟨 STEP 5: Setup Node.js environment (only for JavaScript files)  
+      # 🟨 STEP 5: Setup Node.js environment (only for JavaScript files)
       - name: 🟨 Setup Node.js Environment
         if: matrix.language == 'javascript'
         uses: actions/setup-node@v4
         with:
-          node-version: "18"  # Modern Node.js version
+          node-version: "18" # Modern Node.js version
 
       # 📦 STEP 6: Install JavaScript dependencies
       - name: 📦 Install JavaScript Dependencies
@@ -221,8 +190,8 @@ This issue was automatically created to help you complete the setup." \
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
-          output: sarif-results  # Saves results in industry-standard format
-          upload: false  # We'll handle the upload ourselves
+          output: sarif-results # Saves results in industry-standard format
+          upload: false # We'll handle the upload ourselves
 
       # 📤 STEP 8: Upload results to GitHub Security tab
       - name: 📤 Upload Security Results
@@ -562,7 +531,7 @@ This issue was automatically created to help you complete the setup." \
             echo "- Run security scans regularly"
             echo "- Stay curious about security topics"
           fi
-          
+
           echo ""
           echo "---"
           echo "🔗 **Useful Links:**"
