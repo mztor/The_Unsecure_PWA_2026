@@ -55,17 +55,38 @@ jobs:
 
           if [ "$REPO_INFO" != "true" ]; then
             echo ""
-            echo "❌ SETUP REQUIRED: Issues are disabled in your repository"
+            echo "🚨 CRITICAL: Issues are disabled in your repository!"
+            echo "=============================================="
             echo ""
-            echo "📚 How to fix this:"
-            echo "1. Go to your repository on GitHub"
-            echo "2. Click on 'Settings' tab"
-            echo "3. Scroll down to 'Features' section"
-            echo "4. Check the box next to 'Issues'"
-            echo "5. Re-run this workflow"
+            echo "⚠️  This security workflow CANNOT work without Issues enabled."
+            echo "   Security vulnerabilities are reported as GitHub Issues."
+            echo ""
+            echo "📋 Quick Fix (takes 30 seconds):"
+            echo "1. 🌐 Open your repository on GitHub.com"
+            echo "2. ⚙️  Click the 'Settings' tab (next to Code, Issues, etc.)"
+            echo "3. 📍 Scroll down to 'Features' section"
+            echo "4. ✅ Check the box next to 'Issues'"
+            echo "5. 💾 Settings save automatically"
+            echo "6. 🔄 Come back and re-run this workflow"
+            echo ""
+            echo "🎓 For Students: Ask your teacher for help if you don't see Settings tab"
+            echo "👨‍🏫 For Teachers: You may need organization admin permissions"
+            echo ""
+            echo "🛑 STOPPING WORKFLOW - Issues must be enabled first"
             echo ""
             ISSUES_ENABLED="false"
             SETUP_COMPLETE="false"
+            
+            # Force the workflow to stop by setting should_run to false
+            SHOULD_RUN="false"
+            
+            # Set outputs early and exit
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "setup_complete=false" >> $GITHUB_OUTPUT  
+            echo "issues_enabled=false" >> $GITHUB_OUTPUT
+            
+            echo "📊 Final Status: BLOCKED - Issues disabled"
+            exit 0
           else
             echo "✅ Issues are enabled - Good!"
             ISSUES_ENABLED="true"
@@ -131,7 +152,7 @@ jobs:
   codeql-analysis:
     name: 🔍 CodeQL Security Analysis
     needs: setup-and-validate
-    if: needs.setup-and-validate.outputs.should_run == 'true'
+    if: needs.setup-and-validate.outputs.should_run == 'true' && needs.setup-and-validate.outputs.issues_enabled == 'true'
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -319,7 +340,7 @@ jobs:
   bandit-analysis:
     name: 🐍 Bandit Python Security Analysis
     needs: setup-and-validate
-    if: needs.setup-and-validate.outputs.should_run == 'true'
+    if: needs.setup-and-validate.outputs.should_run == 'true' && needs.setup-and-validate.outputs.issues_enabled == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -451,7 +472,7 @@ jobs:
   security-summary:
     name: 📊 Security Analysis Summary
     needs: [setup-and-validate, codeql-analysis, bandit-analysis]
-    if: always() && needs.setup-and-validate.outputs.should_run == 'true'
+    if: always() && needs.setup-and-validate.outputs.should_run == 'true' && needs.setup-and-validate.outputs.issues_enabled == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
