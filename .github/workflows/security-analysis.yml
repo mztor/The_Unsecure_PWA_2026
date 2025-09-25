@@ -10,7 +10,8 @@ on:
     branches: [main, master, develop]  # Runs when you push code to main branches
   pull_request:
     branches: [main, master, develop]  # Runs when someone creates a pull request
-  schedule:
+  sche        run: |
+          echo "# 🛡️ Security Analysis Complete!"le:
     # 📅 Runs automatically every Sunday at 2 AM UTC (like a weekly security checkup)
     - cron: "0 2 * * 0"
   workflow_dispatch:  # 👆 Allows manual runs from the Actions tab
@@ -133,44 +134,28 @@ jobs:
           else
             echo "📝 Creating setup instructions issue..."
             
-            ISSUE_BODY="# 🎓 Security Analysis Setup Instructions
+            gh issue create \
+              --title "🔧 Security Analysis Setup Instructions - Enable Automatic Scanning" \
+              --body "# 🎓 Security Analysis Setup Instructions
 
 ## 🎉 Congratulations! 
 Your security analysis ran successfully, but it's currently set to manual-only mode.
 
 ## 🔄 To Enable Automatic Scanning:
-
-### Option 1: Simple File Edit (Recommended)
-1. Click here: [Edit security-analysis.yml](https://github.com/${{ github.repository }}/edit/main/.github/workflows/security-analysis.yml)
-2. Find line 22 that says: \`SECURITY_ANALYSIS_ENABLED: false\`
-3. Change it to: \`SECURITY_ANALYSIS_ENABLED: true\`  
-4. Scroll to bottom and click \"Commit changes\"
-5. Add a commit message like: \"Enable automatic security scanning\"
-6. Click \"Commit changes\" again
-
-### Option 2: Using VS Code/GitHub Codespaces
-1. Open your repository in VS Code or Codespaces
-2. Navigate to \`.github/workflows/security-analysis.yml\`
-3. Change line 22 from \`false\` to \`true\`
-4. Save and commit the changes
+1. Edit .github/workflows/security-analysis.yml
+2. Change SECURITY_ANALYSIS_ENABLED from false to true
+3. Commit and push your changes
 
 ## 📅 What Happens Next:
-- ✅ Automatic scans every Sunday at 2 AM UTC
-- ✅ Scans on every code push to main branch  
-- ✅ Scans on pull requests
-- ✅ Security issues will be automatically created as GitHub Issues
+- Automatic scans every Sunday at 2 AM UTC
+- Scans on every code push to main branch  
+- Security issues will be automatically created as GitHub Issues
 
 ## 🆘 Need Help?
-- **Issues not appearing?** Make sure Issues are enabled in Settings → Features → Issues
-- **Workflow not running?** Check the Actions tab for error messages
-- **Questions?** Ask your teacher or create an issue with the \`help-needed\` label
+Ask your teacher or create an issue with the help-needed label.
 
 ---
-This issue was automatically created to help you complete the setup. You can close it once you've enabled automatic scanning."
-
-            gh issue create \
-              --title "🔧 Security Analysis Setup Instructions - Enable Automatic Scanning" \
-              --body "$ISSUE_BODY" \
+This issue was automatically created to help you complete the setup." \
               --label "setup,security,help,automated" \
               --assignee "${{ github.actor }}" || true
           fi
