@@ -31,5 +31,5 @@
       "visibility": "public"
     }
   },
-  "liveServer.settings.port": 5501
+  "liveServer.settings.root": ".student_resources"
 }
