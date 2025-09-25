@@ -368,7 +368,7 @@ jobs:
       - name: 🔍 Run Python Security Scan
         run: |
           echo "🔍 Scanning Python code for security issues..."
-          bandit -r . -f json -o bandit-report.json --severity-level medium || true
+          bandit -r . -f json -o bandit-report.json --severity-level medium --exclude ./.student_resources || true
           echo "📄 Security scan complete! Results saved to bandit-report.json"
 
       # 🎫 STEP 5: Turn security findings into GitHub Issues

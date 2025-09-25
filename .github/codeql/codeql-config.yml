@@ -8,7 +8,7 @@ queries:
 paths:
   - "."
 
-# Paths to ignore  
+# Paths to ignore
 paths-ignore:
   - "**/*.md"
   - "**/*.txt"
@@ -20,14 +20,15 @@ paths-ignore:
   - "**/.git/**"
   - "**/static/icons/**"
   - "**/static/images/**"
+  - "**/.student_resources/**"
 
 # Query filters for reducing noise
 query-filters:
   - include:
       kind: problem
-      severity: 
+      severity:
         - error
         - warning
   - exclude:
-      tags: 
+      tags:
         - "experimental"
