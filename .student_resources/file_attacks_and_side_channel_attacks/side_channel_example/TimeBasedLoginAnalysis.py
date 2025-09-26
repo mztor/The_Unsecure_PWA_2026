@@ -12,8 +12,10 @@ import re
 import requests
 import random
 import string
+import matplotlib
 import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor
+import os
 
 
 def trylogin(username, statistics):
@@ -114,6 +116,17 @@ if __name__ == "__main__":
         )
 
     if options.show is not None or options.file is not None:
+        # Check if we're in a headless environment
+        display_available = os.environ.get("DISPLAY") is not None or os.name == "nt"
+
+        # If showing graph but no display available, force save to file
+        if options.show and not display_available:
+            print(
+                "[!] No display detected (headless environment). Saving graph to 'graph.png' instead."
+            )
+            options.file = "graph.png"
+            options.show = None
+
         plt.plot(
             [x for x in range(len(statistics[random_username]))],
             statistics[random_username],
