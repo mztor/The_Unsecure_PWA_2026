@@ -9,5 +9,4 @@ bcrypt
 requests
 matplotlib
 rich
-pytop
 gunicorn
